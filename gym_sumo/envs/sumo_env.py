@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from gym_sumo.envs import Sumo
-
+import random
 
 import logging
 logger = logging.getLogger(__name__)
@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 np.set_printoptions(precision=4)
 np.set_printoptions(suppress=True)
 np.random.seed(1)
+scenario_counter = 0
 
 class Car:
 	""" A class struct that stores the car features.
@@ -44,7 +45,12 @@ class SumoEnv(gym.Env):
 		# 1. # Lanes
 		# 2. Density of Traffic
 		# 3. Angles
-		self.scenario = np.asarray([0,2,2,1])
+		# self.scenario = np.asarray([0,2,2,1])
+		
+		scenarios_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+		random.shuffle(scenarios_list)
+
+		self.scenario = scenarios_list[scenario_counter]
 		self.observation = []
 		self.port_number = 8870
 		self.traci = Sumo.initSimulator(self.withGUI, self.port_number, self.scenario)
@@ -58,6 +64,15 @@ class SumoEnv(gym.Env):
 		## SET OPENAI VALS
 		self.observation_space = spaces.Box(low=0, high=1, shape=(np.shape(self.observation)), dtype=np.float64)
 		self.action_space = spaces.Discrete(5)
+	
+	
+	def scenario_counter():
+		
+		global scenario_counter
+		scenario_counter += 1
+		
+		return scenario_counter
+	
 
 	def step(self, action):
 		## Dynamic Frame Skipping
@@ -148,7 +163,7 @@ class SumoEnv(gym.Env):
 		except:
 			pass
 
-		super().reset(seed=seed)	
+		super().reset(seed=seed)
 		self.addEgoCar()            # Add the ego car to the scene
 		self.setGoalPosition()      # Set the goal position
 		self.traci.simulationStep() # Take a simulation step to initialize car
@@ -243,7 +258,7 @@ class SumoEnv(gym.Env):
 		elif action == 1: # wait
 			accel = 0
 			speed = 0
-		car = Car(self.egoCarID)
+		
 		# New speed
 		speed = speed + self.dt*accel
 		# Lower and upper bound for speed on straight roads and the turn

@@ -41,6 +41,7 @@ import torch.nn as nn
 import torch.optim as optim
 import random
 from collections import namedtuple
+import gym_sumo.envs.sumo_env as sumo_env
 
 # Define the Replay Memory
 Transition = namedtuple('Transition', ('state', 'action', 'next_state', 'reward', 'done'))
@@ -141,6 +142,9 @@ agent = DQNAgent(input_dim, output_dim, lr=0.001, gamma=0.99, epsilon=0.1, targe
 # Training loop
 num_episodes = 1000
 for episode in range(num_episodes):
+    if episode % 100 == 1:
+        sumo_class = sumo_env.SumoEnv
+        sumo_class.scenario_counter()
     state, _ = env.reset()
     state_tensor = torch.tensor(state, dtype=torch.float32).unsqueeze(0)
     done = False
