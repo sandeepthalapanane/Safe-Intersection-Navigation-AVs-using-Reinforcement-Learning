@@ -239,12 +239,11 @@ class SumoEnv(gym.Env):
 		# action 1 = stay
 		if action == 0: #accelerate
 			accel = 100
-			print("moving")
+			speed = 10
 		elif action == 1: # wait
 			accel = 0
-			print("stopping")
+			speed = 0
 		car = Car(self.egoCarID)
-		speed = 0
 		# New speed
 		speed = speed + self.dt*accel
 		# Lower and upper bound for speed on straight roads and the turn
