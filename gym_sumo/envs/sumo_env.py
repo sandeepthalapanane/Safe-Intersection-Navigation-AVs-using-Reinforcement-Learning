@@ -4,7 +4,7 @@ import gym
 from gym import error, spaces
 from gym import utils
 from gym.utils import seeding
-
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -37,7 +37,7 @@ class SumoEnv(gym.Env):
 
 	def __init__(self):
 		## SIMULATOR SETTINGS
-		self.withGUI = True #True
+		self.withGUI = False #True
 
 		if self.withGUI:
 			print("Press Ctrl-A to start simulation")
@@ -47,10 +47,10 @@ class SumoEnv(gym.Env):
 		# 3. Angles
 		# self.scenario = np.asarray([0,2,2,1])
 		
-		scenarios_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-		random.shuffle(scenarios_list)
+		self.scenarios_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+		# random.shuffle(self.scenarios_list)
 
-		self.scenario = scenarios_list[scenario_counter]
+		self.scenario = self.scenarios_list[scenario_counter]
 		self.observation = []
 		self.port_number = 8870
 		self.traci = Sumo.initSimulator(self.withGUI, self.port_number, self.scenario)
@@ -66,11 +66,20 @@ class SumoEnv(gym.Env):
 		self.action_space = spaces.Discrete(5)
 	
 	
-	def scenario_counter():
+	def scenario_counter(self, epsiode):
 		
 		global scenario_counter
-		scenario_counter += 1
-		
+		scenario_counter = int(epsiode/20)
+		self.scenario = self.scenarios_list[scenario_counter]
+		if self.traci is not None:
+			self.traci.close()
+			sys.stdout.flush()
+			self.traci = None
+			self.traci = Sumo.initSimulator(self.withGUI, self.port_number, self.scenario)
+    	
+		print("Scenario selected: ", self.scenario)
+		print("Scenario Counter: ", scenario_counter)
+
 		return scenario_counter
 	
 
@@ -131,24 +140,15 @@ class SumoEnv(gym.Env):
 		else: # Goal check
 			position_ego = np.asarray(self.traci.vehicle.getPosition(self.egoCarID))
 			distance_ego = np.linalg.norm(position_ego - self.endPos)
-			if self.scenario[0] == 0:
-				if position_ego[0] <= self.endPos[0]:
+			thresh = 5
+			if self.scenario in self.scenarios_list:
+				if distance_ego <= thresh:
 					reward = 1.0 
 					terminal = True
 					terminalType = 'Survived'
 					print(terminalType)
-			if self.scenario[0] == 2:
-				if position_ego[0] >= self.endPos[0]:
-					reward = 1.0 
-					terminal = True
-					terminalType = 'Survived'
-					print(terminalType)
-			if self.scenario[0] == 1:   
-				if position_ego[1] >= self.endPos[1]:
-					reward = 1.0 
-					terminal = True
-					terminalType = 'Survived'
-					print(terminalType)
+			
+
 		if (terminalType == 'Collided!!!'):
 			print(terminalType)
 			print(terminal)
@@ -197,17 +197,31 @@ class SumoEnv(gym.Env):
 
 		# 0. Left, Center, Right
 		# 1. # Lanes
-		if self.scenario[0]==0: # left
-			self.endPos = [85.0, 101.65]
-		elif self.scenario[0]==2:
-			self.endPos = [115.0, 98.0]
+		if self.scenario==1: # left
+			self.endPos = [122.94, 119.26]
+		elif self.scenario==2:
+			self.endPos = [176.07, 61.77]
+		elif self.scenario==3:
+			self.endPos = [77.29, 43.40]
+		elif self.scenario==4:
+			self.endPos = [94.45, 80.45]
+		elif self.scenario==5:   
+			self.endPos = [171.76, 201.74]
+		elif self.scenario==6:
+			self.endPos = [103.28, 126.17]
 			#self.endPos = [115.0, 95.0]
-		elif self.scenario[1]==0:
-			self.endPos = [101.5, 113.0]
-		elif self.scenario[1]==1:
-			self.endPos = [101.5, 118.0]
-		elif self.scenario[1]==2:   
-			self.endPos = [101.5, 124.0]
+		elif self.scenario==7:
+			self.endPos = [101.61, 106.89]
+		elif self.scenario==8:
+			self.endPos = [153.35, 87.09]
+		elif self.scenario==9:   
+			self.endPos = [121.96, 152.00]
+		elif self.scenario==10:   
+			self.endPos = [94.32, 94.12]
+		elif self.scenario==11:   
+			self.endPos = [224.60, 153.65]
+		elif self.scenario==12:   
+			self.endPos = [209.49, 82.01]
 
 	def _getInfo(self):
 		return {"current_episode":0}
@@ -234,13 +248,30 @@ class SumoEnv(gym.Env):
 		# depart = -1   (immediate departure time)
 		# pos    = -2   (random position)
 		# speed  = -2   (random speed)
-		if self.scenario[1]==0: 
-			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart='now', departPos=92.0, departSpeed=0, departLane=0, typeID='vType0')
-		if self.scenario[1]==1: 
-			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart='now', departPos=88.0, departSpeed=0, departLane=0, typeID='vType0')
-		if self.scenario[1]==2: 
-			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart='now', departPos=84.0, departSpeed=0, departLane=0, typeID='vType0')
-
+		if self.scenario==1: 
+			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=76.47, departSpeed=0, departLane=0, typeID='vType0')
+		if self.scenario==2: 
+			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=47.50, departSpeed=0, departLane=0, typeID='vType0')
+		if self.scenario==3: 
+			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=39.36, departSpeed=0, departLane=0, typeID='vType0')
+		if self.scenario==4: 
+			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=81.49, departSpeed=0, departLane=0, typeID='vType0')
+		if self.scenario==5: 
+			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=108.26, departSpeed=0, departLane=0, typeID='vType0')
+		if self.scenario==6: 
+			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=84.65, departSpeed=0, departLane=0, typeID='vType0')
+		if self.scenario==7: 
+			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=83.58, departSpeed=0, departLane=0, typeID='vType0')
+		if self.scenario==8: 
+			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=76.47, departSpeed=0, departLane=0, typeID='vType0')
+		if self.scenario==9: 
+			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=108.26, departSpeed=0, departLane=0, typeID='vType0')
+		if self.scenario==10: 
+			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=76.47, departSpeed=0, departLane=0, typeID='vType0')
+		if self.scenario==11: 
+			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=43.05, departSpeed=0, departLane=0, typeID='vType0')
+		if self.scenario==12: 
+			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=48.80, departSpeed=0, departLane=0, typeID='vType0')
 		self.traci.vehicle.setSpeedMode(self.egoCarID, int('00000', 2))
 		
 
@@ -253,8 +284,8 @@ class SumoEnv(gym.Env):
 		# action 0 = go
 		# action 1 = stay
 		if action == 0: #accelerate
-			accel = 100
-			speed = 10
+			accel = 450
+			speed = 15
 		elif action == 1: # wait
 			accel = 0
 			speed = 0

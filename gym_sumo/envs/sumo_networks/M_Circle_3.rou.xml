@@ -1,0 +1,35 @@
+<routes>
+
+    <!-- Route distribution -->
+    <routeDistribution id="route0">
+        <route id="route0" edges="497705358#1 497705358#2 23189425 23591383#1 -1219540231#1 -244875117#0 -497505828#2 -497505828#1 -497505828#0" probability="1.0"/>
+    </routeDistribution>
+    <routeDistribution id="route1">
+        <route id="route1" edges="497705358#1 497705358#2 23189425 23591383#1 -6126669#4 -6126669#1 -6126669#0 699146617#0 699146617#1 699146617#2 699146617#3" probability="1.0"/>
+    </routeDistribution>
+    <routeDistribution id="route2">
+        <route id="route2" edges="244875117#1 23188166#0 23188166#1 6141938#0 6141938#1 -208413267#3" probability="1.0"/>
+    </routeDistribution>
+    <routeDistribution id="route3">
+        <route id="route3" edges="23189425 23591383#1 23188166#0 23188166#1 6141938#0 6141938#1 -208413267#3 -208413267#2 -208413267#1 -208413267#0" probability="1.0"/>
+    </routeDistribution>
+
+    <!-- Vehicle type distribution -->
+    <vType id="vType0" vClass="passenger" guiShape="passenger/sedan" color="1,0,0" speedDev="0.1" probability="1.0"/>
+
+    <vTypeDistribution id="typeDist0">
+        <vType id="vType1" vClass="passenger" guiShape="passenger/sedan" color="1,1,0" speedDev="0.1" probability="1.0"/>
+    </vTypeDistribution>
+
+    <!-- Traffic Flow -->
+    <flow id="flow0" begin="0" type="typeDist0" route="route0" departSpeed="random" departLane="0" probability="0.05"/> 
+    <flow id="flow1" begin="0" type="typeDist0" route="route1" departSpeed="random" departLane="0" probability="0.05"/> 
+    <flow id="flow2" begin="0" type="typeDist0" route="route2" departSpeed="random" departLane="0" probability="0.05"/> 
+    <flow id="flow3" begin="0" type="typeDist0" route="route3" departSpeed="random" departLane="0" probability="0.05"/> 
+
+    <!-- Ego car -->
+    <route id="routeEgo" edges="208413267#1 208413267#2 208413267#3 -6141938#1 -6141938#0 -23188166#1 -23188166#0 1219540229 -23591383#0 -497705358#2 -497705358#1"/>
+    <!-- <vehicle id="Ego" type="vType0" route="routeEgo" depart="50" departSpeed="random" departLane="0" probability="0.1"/> -->
+
+</routes>
+				
