@@ -64,7 +64,6 @@ agent = DQNAgent(input_dim, output_dim, gamma=0.99, epsilon=0.1, target_update=1
 # Testing loop
 num_episodes = 10  # Update with the number of episodes you want to test
 for episode in range(num_episodes):
-    print("Hello")
     state, _ = env.reset()
     state_tensor = torch.tensor(state, dtype=torch.float32).unsqueeze(0) 
     done = False

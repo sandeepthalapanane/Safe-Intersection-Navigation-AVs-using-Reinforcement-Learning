@@ -48,7 +48,7 @@ class SumoEnv(gym.Env):
 		# self.scenario = np.asarray([0,2,2,1])
 		# self.scenarios_list = scenarios_list
 		# print(scenarios_list)
-		self.scenarios_list = [13, 14]
+		self.scenarios_list = [14, 13]
 		# random.shuffle(self.scenarios_list)
 		self.scenario = self.scenarios_list[scenario_counter]
 		# print(self.scenario)
