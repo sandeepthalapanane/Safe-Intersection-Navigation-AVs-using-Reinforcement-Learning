@@ -8,18 +8,18 @@ def initSimulator(withGUI, portnum, name):
 
 	# Path to the sumo binary
 	if withGUI:
-		# sumoBinary = "C:/Sumo/bin/sumo-gui"
-		sumoBinary = "D:/CMSC473/SUMO/bin/sumo-gui.exe"
+		sumoBinary = "C:/Sumo/bin/sumo-gui"
+		# sumoBinary = "D:/CMSC473/SUMO/bin/sumo-gui.exe"
 	else:
-		# sumoBinary = "C:/Sumo/bin/sumo"
-		sumoBinary = "D:/CMSC473/SUMO/bin/sumo"
+		sumoBinary = "C:/Sumo/bin/sumo"
+		# sumoBinary = "D:/CMSC473/SUMO/bin/sumo"
 
 
 	# Load the scenario
 	# descriptor = descriptor.astype(int)
 	task = str(name)+'.sumo'+ '.cfg'
-	# sumoConfig = "C:/Users/sande/Desktop/Safe-Intersection-Navigation-AVs-using-Reinforcement-Learning/gym_sumo/envs/sumo_networks/"+task
-	sumoConfig = "D:/Robot_Learning/Safe-Intersection-Navigation-AVs-using-Reinforcement-Learning/gym_sumo/envs/sumo_networks/"+task
+	sumoConfig = "C://Users//sande//Desktop/Safe-Intersection-Navigation-AVs-using-Reinforcement-Learning//gym_sumo//envs//sumo_networks//"+task
+	# sumoConfig = "D:/Robot_Learning/Safe-Intersection-Navigation-AVs-using-Reinforcement-Learning/gym_sumo/envs/sumo_networks/"+task
 
 	# Call the sumo simulator
 	sumoProcess = subprocess.Popen([sumoBinary, "-c", sumoConfig, "--remote-port", str(portnum), \

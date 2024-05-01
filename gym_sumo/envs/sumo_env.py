@@ -35,7 +35,7 @@ class Car:
 class SumoEnv(gym.Env):
 	metadata = {'render.modes': ['human']}
 
-	def __init__(self, scenarios_list):
+	def __init__(self):
 		## SIMULATOR SETTINGS
 		self.withGUI = False #True
 
@@ -46,11 +46,11 @@ class SumoEnv(gym.Env):
 		# 2. Density of Traffic
 		# 3. Angles
 		# self.scenario = np.asarray([0,2,2,1])
-		self.scenarios_list = scenarios_list
+		# self.scenarios_list = scenarios_list
 		# print(scenarios_list)
-		# self.scenarios_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+		self.scenarios_list = [13, 14]
 		# random.shuffle(self.scenarios_list)
-		self.scenario = scenarios_list[scenario_counter]
+		self.scenario = self.scenarios_list[scenario_counter]
 		# print(self.scenario)
 		self.observation = []
 		self.port_number = 8870
