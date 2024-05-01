@@ -28,7 +28,7 @@
     <flow id="flow3" begin="0" type="typeDist0" route="route3" departSpeed="random" departLane="0" probability="0.05"/> 
 
     <!-- Ego car -->
-    <route id="routeEgo" edges="208413267#1 208413267#2 208413267#3 -6141938#1 -6141938#0 -23188166#1 -23188166#0 -1219540231#1 -244875117#0"/>
+    <route id="routeEgo" edges="-23188166#0 -1219540231#1 -244875117#0"/>
     <!-- <vehicle id="Ego" type="vType0" route="routeEgo" depart="50" departSpeed="random" departLane="0" probability="0.1"/> -->
 
 </routes>

@@ -35,7 +35,7 @@ class Car:
 class SumoEnv(gym.Env):
 	metadata = {'render.modes': ['human']}
 
-	def __init__(self):
+	def __init__(self, scenarios_list):
 		## SIMULATOR SETTINGS
 		self.withGUI = False #True
 
@@ -46,11 +46,12 @@ class SumoEnv(gym.Env):
 		# 2. Density of Traffic
 		# 3. Angles
 		# self.scenario = np.asarray([0,2,2,1])
-		
-		self.scenarios_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+		self.scenarios_list = scenarios_list
+		# print(scenarios_list)
+		# self.scenarios_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 		# random.shuffle(self.scenarios_list)
-
-		self.scenario = self.scenarios_list[scenario_counter]
+		self.scenario = scenarios_list[scenario_counter]
+		# print(self.scenario)
 		self.observation = []
 		self.port_number = 8870
 		self.traci = Sumo.initSimulator(self.withGUI, self.port_number, self.scenario)
@@ -222,6 +223,11 @@ class SumoEnv(gym.Env):
 			self.endPos = [224.60, 153.65]
 		elif self.scenario==12:   
 			self.endPos = [209.49, 82.01]
+		elif self.scenario==13:
+			self.endPos = [530.59, 292.77]
+		elif self.scenario==14:
+			self.endPos = [352.73, 365.63]
+			
 
 	def _getInfo(self):
 		return {"current_episode":0}
@@ -272,6 +278,10 @@ class SumoEnv(gym.Env):
 			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=43.05, departSpeed=0, departLane=0, typeID='vType0')
 		if self.scenario==12: 
 			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=48.80, departSpeed=0, departLane=0, typeID='vType0')
+		if self.scenario==13: 
+			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=44.24, departSpeed=0, departLane=0, typeID='vType0')
+		if self.scenario==14: 
+			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=18.49, departSpeed=0, departLane=0, typeID='vType0')
 		self.traci.vehicle.setSpeedMode(self.egoCarID, int('00000', 2))
 		
 
