@@ -28,10 +28,14 @@ class QNetwork(nn.Module):
 
 # Define the DQN Agent
 class DQNAgent:
-    def __init__(self, input_dim, output_dim, model_path):
+    def __init__(self, input_dim, output_dim, model_path, gamma, epsilon, target_update):
         self.policy_net = QNetwork(input_dim, output_dim)
         self.policy_net.load_state_dict(torch.load(model_path))
         self.policy_net.eval()
+        self.steps_done = 0
+        self.batch_size = 128
+        self.gamma = gamma
+        self.epsilon = epsilon
     
     # def select_action(self, state):
     #     with torch.no_grad():
@@ -47,16 +51,14 @@ class DQNAgent:
 
     
 # Load the trained model
-model_path = 'D:\\Robot_Learning\\Safe-Intersection-Navigation-AVs-using-Reinforcement-Learning\\models\\model_episode_200.pth'
-scenarios_list = [13, 14]
-env = sumo_env.SumoEnv(scenarios_list)
+model_path = 'C:\\Users\\Sande\\Desktop\\Safe-Intersection-Navigation-AVs-using-Reinforcement-Learning\\models\\model_episode_200.pth'
 
 # Set up the environment
 env_name = 'sumo-v0'  # Update with your environment name
 env = gym.make(env_name)
 input_dim = env.observation_space.shape[0]
 output_dim = env.action_space.n
-agent = DQNAgent(input_dim, output_dim, model_path)
+agent = DQNAgent(input_dim, output_dim, gamma=0.99, epsilon=0.1, target_update=10, model_path=model_path)
 
 
 # Testing loop
