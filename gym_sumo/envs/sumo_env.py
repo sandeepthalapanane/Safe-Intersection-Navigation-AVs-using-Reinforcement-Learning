@@ -37,7 +37,7 @@ class SumoEnv(gym.Env):
 
 	def __init__(self):
 		## SIMULATOR SETTINGS
-		self.withGUI = False #True
+		self.withGUI = True #True
 
 		if self.withGUI:
 			print("Press Ctrl-A to start simulation")
@@ -48,7 +48,7 @@ class SumoEnv(gym.Env):
 		# self.scenario = np.asarray([0,2,2,1])
 		# self.scenarios_list = scenarios_list
 		# print(scenarios_list)
-		self.scenarios_list = [14, 13]
+		self.scenarios_list = [13, 14]
 		# random.shuffle(self.scenarios_list)
 		self.scenario = self.scenarios_list[scenario_counter]
 		# print(self.scenario)
@@ -279,9 +279,9 @@ class SumoEnv(gym.Env):
 		if self.scenario==12: 
 			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=48.80, departSpeed=0, departLane=0, typeID='vType0')
 		if self.scenario==13: 
-			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=44.24, departSpeed=0, departLane=0, typeID='vType0')
+			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=70.27, departSpeed=0, departLane=0, typeID='vType0')
 		if self.scenario==14: 
-			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=18.49, departSpeed=0, departLane=0, typeID='vType0')
+			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=39.2, departSpeed=0, departLane=0, typeID='vType0')
 		self.traci.vehicle.setSpeedMode(self.egoCarID, int('00000', 2))
 		
 
