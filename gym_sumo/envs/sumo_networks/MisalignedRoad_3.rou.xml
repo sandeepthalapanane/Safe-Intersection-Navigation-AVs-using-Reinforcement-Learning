@@ -28,12 +28,12 @@
     </vTypeDistribution>
 
     <!-- Traffic Flow -->
-    <flow id="flow0" begin="0" type="typeDist0" route="route0" departSpeed="random" departLane="0" probability="0.05"/> 
+    <!-- <flow id="flow0" begin="0" type="typeDist0" route="route0" departSpeed="random" departLane="0" probability="0.05"/>  -->
     <flow id="flow1" begin="0" type="typeDist0" route="route1" departSpeed="random" departLane="0" probability="0.05"/> 
     <flow id="flow2" begin="0" type="typeDist0" route="route2" departSpeed="random" departLane="0" probability="0.05"/> 
     <flow id="flow3" begin="0" type="typeDist0" route="route3" departSpeed="random" departLane="0" probability="0.05"/> 
     <flow id="flow4" begin="0" type="typeDist0" route="route4" departSpeed="random" departLane="0" probability="0.05"/> 
-    <flow id="flow5" begin="0" type="typeDist0" route="route5" departSpeed="random" departLane="0" probability="0.05"/> 
+    <!-- <flow id="flow5" begin="0" type="typeDist0" route="route5" departSpeed="random" departLane="0" probability="0.05"/>  -->
 
     <!-- Ego car -->
     <route id="routeEgo" edges="-1 -2"/>

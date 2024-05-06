@@ -160,8 +160,8 @@ if os.path.exists(model_dir):
 else:
     start_episode = 0  # No model directory, start from episode 0
 
-for episode in range(start_episode, num_episodes):
-    if (episode+1 % 20 == 0) and (episode > 0):
+for episode in range(start_episode, num_episodes, 1):
+    if (episode % 20 == 0) and (episode > 0):
         env.scenario_counter(episode)
         model_path = model_dir + "model_episode_{}.pth".format(episode)
         torch.save(agent.policy_net.state_dict(), model_path)

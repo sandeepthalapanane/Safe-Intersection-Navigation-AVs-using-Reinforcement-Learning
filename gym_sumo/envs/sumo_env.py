@@ -46,9 +46,9 @@ class SumoEnv(gym.Env):
 		# 2. Density of Traffic
 		# 3. Angles
 		# self.scenario = np.asarray([0,2,2,1])
-		# self.scenarios_list = scenarios_list
+		self.scenarios_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 		# print(scenarios_list)
-		self.scenarios_list = [13, 14]
+		# self.scenarios_list = [13, 14]
 		# random.shuffle(self.scenarios_list)
 		self.scenario = self.scenarios_list[scenario_counter]
 		# print(self.scenario)
@@ -275,9 +275,9 @@ class SumoEnv(gym.Env):
 		if self.scenario==10: 
 			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=76.47, departSpeed=0, departLane=0, typeID='vType0')
 		if self.scenario==11: 
-			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=43.05, departSpeed=0, departLane=0, typeID='vType0')
+			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=107.54, departSpeed=0, departLane=0, typeID='vType0')
 		if self.scenario==12: 
-			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=48.80, departSpeed=0, departLane=0, typeID='vType0')
+			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=57.52, departSpeed=0, departLane=0, typeID='vType0')
 		if self.scenario==13: 
 			self.traci.vehicle.add(self.egoCarID, 'routeEgo', depart="0", departPos=70.27, departSpeed=0, departLane=0, typeID='vType0')
 		if self.scenario==14: 
