@@ -23,7 +23,7 @@ def initSimulator(withGUI, portnum, name):
 
 	# Call the sumo simulator
 	sumoProcess = subprocess.Popen([sumoBinary, "-c", sumoConfig, "--remote-port", str(portnum), \
-		"--time-to-teleport", str(-1), "--collision.check-junctions", str(True), \
+		"--time-to-teleport", str(-1), "--collision.check-junctions", str(True), "--eager-insert", str(True), \
 		"--no-step-log", str(True), "--no-warnings", str(True)], stdout=sys.stdout, stderr=sys.stderr)
 
 	# Initialize the simulation

@@ -1,38 +1,3 @@
-# import gym
-
-# import gym_sumo
-# import numpy as np
-
-# game_name = 'sumo-v0'
-# print("Starting", game_name)
-
-# env = gym.make(game_name)
-# print("observation space", env.observation_space)
-# print("action space", env.action_space) 
-
-# frameskip = 1
-# ### SETUP SCENARIO ###
-# for i in range(1000):
-
-# 	env.reset()
-# 	done = False
-# 	cumulative_reward = 0
-# 	# for j in xrange(100):
-# 	while not done:
-
-# 		action = np.random.randint(0,2)
-		
-# 		for f in range(frameskip):
-# 			observation, reward, done, info = env.step(action)
-# 			# print info
-# 			cumulative_reward += reward
-		
-# 		env.render()
-		
-# 		if done==True:
-# 			break
-# 	print('reward',cumulative_reward)
-
 import gym
 import gym_sumo
 import numpy as np
@@ -43,11 +8,15 @@ import random
 from collections import namedtuple
 import os
 import gym_sumo.envs.sumo_env as sumo_env
+import logging
+import matplotlib.pyplot as plt
 
-# Define the Replay Memory
+# Configure logging
+logging.basicConfig(filename='training_log.txt', level=logging.INFO, format='%(message)s')
+
 Transition = namedtuple('Transition', ('state', 'action', 'next_state', 'reward', 'done'))
 
-class ReplayMemory:
+class Replay_Memory:
     def __init__(self, capacity):
         self.capacity = capacity
         self.memory = []
@@ -65,7 +34,7 @@ class ReplayMemory:
     def __len__(self):
         return len(self.memory)
 
-# Define the Q-Network
+
 class QNetwork(nn.Module):
     def __init__(self, input_dim, output_dim):
         super(QNetwork, self).__init__()
@@ -78,11 +47,8 @@ class QNetwork(nn.Module):
         x = torch.relu(self.fc1(x))
         x = torch.relu(self.fc2(x))
         x = self.fc3(x)
-        # x = torch.sigmoid(x) 
-        # x = torch.round(x) 
         return x
 
-# Define the DQN Agent
 class DQNAgent:
     def __init__(self, input_dim, output_dim, lr, gamma, epsilon, target_update):
         self.policy_net = QNetwork(input_dim, output_dim)
@@ -90,7 +56,7 @@ class DQNAgent:
         self.target_net.load_state_dict(self.policy_net.state_dict())
         self.target_net.eval()
         self.optimizer = optim.Adam(self.policy_net.parameters(), lr=lr)
-        self.memory = ReplayMemory(10000)
+        self.memory = Replay_Memory(10000)
         self.batch_size = 128
         self.gamma = gamma
         self.epsilon = epsilon
@@ -120,7 +86,7 @@ class DQNAgent:
         next_state_values = torch.zeros(self.batch_size)
         next_state_values[non_final_mask] = self.target_net(non_final_next_states).max(1)[0].detach()
         expected_state_action_values = (next_state_values * self.gamma) + reward_batch
-        loss = nn.functional.smooth_l1_loss(state_action_values, expected_state_action_values.unsqueeze(1))
+        loss = nn.functional.mse_loss(state_action_values, expected_state_action_values.unsqueeze(1))
         self.optimizer.zero_grad()
         loss.backward()
         for param in self.policy_net.parameters():
@@ -130,40 +96,44 @@ class DQNAgent:
     def update_target_network(self):
         self.target_net.load_state_dict(self.policy_net.state_dict())
         
-# Set up the environment
 env_name = 'sumo-v0'
-env = gym.make(env_name)
+env_args = {'mode': 'train'}
+env = gym.make(env_name, **env_args)
 input_dim = env.observation_space.shape[0]
 output_dim = env.action_space.n
-sumo_class = sumo_env.SumoEnv
 model_dir = "models/"
 
-# Initialize the DQN agent
-agent = DQNAgent(input_dim, output_dim, lr=0.001, gamma=0.99, epsilon=0.1, target_update=10)
 
-# Training loop
-num_episodes = 240
-# Check if a pre-trained model exists
+agent = DQNAgent(input_dim, output_dim, lr=0.001, gamma=0.99, epsilon=0.1, target_update=5)
+
+
 if os.path.exists(model_dir):
     saved_models = os.listdir(model_dir)
     if saved_models:
-        saved_models.sort()  # Ensure models are sorted
-        last_model = "model_episode_200.pth"  # Get the last saved model
-        last_episode = int(last_model.split("_")[2].split(".")[0])  # Extract episode number from the model name
-        start_episode = last_episode + 1  # Resume training from the next episode
+        saved_models.sort()
+        last_model = saved_models[-1]
+        last_episode = int(last_model.split("_")[0])
+        start_episode = last_episode + 1
         model_path = os.path.join(model_dir, last_model)
         agent.policy_net.load_state_dict(torch.load(model_path))
-        env.scenario_counter(last_episode)
+        env.scenario_counter(int(last_episode/100))
         print("Loaded model weights from", model_path)
     else:
-        start_episode = 0  # No saved models, start from episode 0
+        start_episode = 0
 else:
-    start_episode = 0  # No model directory, start from episode 0
+    start_episode = 0
+
+num_episodes = 1200
+scenarios = 12
+sceanrio_update = num_episodes - start_episode/scenarios
+
+re_wards = []
 
 for episode in range(start_episode, num_episodes, 1):
-    if (episode % 20 == 0) and (episode > 0):
-        env.scenario_counter(episode)
-        model_path = model_dir + "model_episode_{}.pth".format(episode)
+    if (episode % 100 == 0) and (episode > 0):
+        env.scenario_counter(int(episode/100))
+        formatted_episode = str(episode).zfill(4)
+        model_path = model_dir + "{}_episode_model.pth".format(formatted_episode)
         torch.save(agent.policy_net.state_dict(), model_path)
         print("Model saved at episode", episode)
     state, _ = env.reset()
@@ -172,19 +142,51 @@ for episode in range(start_episode, num_episodes, 1):
     total_reward = 0
     while not done:
         action = agent.select_action(state_tensor)
-        next_state, reward, done, _ = env.step(action.item())
+        next_state, reward, done, info = env.step(action.item())
         total_reward += reward
-        next_state = torch.tensor(next_state, dtype=torch.float32).unsqueeze(0) if not done else None
+        next_state = torch.tensor(next_state, dtype=torch.float32, ).unsqueeze(0) if not done else None
         agent.memory.push(state, action, next_state, torch.tensor([reward], dtype=torch.float32), torch.tensor([done], dtype=torch.bool))
         state = next_state
         agent.optimize_model()
-        # env.render()
+        # env.render() 
     if episode % agent.target_update == 0:
         agent.update_target_network()
-    print('Episode {}: Total Reward = {}'.format(episode, total_reward))
 
-# Save trained model
-torch.save(agent.policy_net.state_dict(), 'dqn_model.pth')
+    re_wards.append(total_reward)
+    terminalType = info["information"]
+    print('Episode {}: Total Reward = {}, Result: {}'.format(episode, round(total_reward,3), terminalType))
+    logging.info('Episode {}: Total Reward = {}, Result: {}'.format(episode, round(total_reward,3), terminalType))
+    
 
-# Close environment
+
+torch.save(agent.policy_net.state_dict(), 'models/1200_episode_model.pth')
+
+
+file_path = 'training_log.txt'
+with open(file_path, 'r') as file:
+    data = file.readlines()
+
+# Parse the data to extract episode numbers and total rewards
+episodes = []
+rewards = []
+for line in data:
+    parts = line.strip().split(":")
+    if len(parts) >= 2:
+        episode = int(parts[0].split()[1])
+        reward_str = parts[1].split("=")[1].split(",")[0].strip()
+        try:
+            reward = float(reward_str)
+            episodes.append(episode)
+            rewards.append(reward)
+        except ValueError:
+            print(f"Skipping line: {line}")
+
+# Plot the total rewards
+plt.plot(episodes, rewards, linestyle='-')
+plt.xlabel('Episode')
+plt.ylabel('Total Reward')
+plt.title('Total Reward per Episode')
+plt.grid(True)
+plt.show()
+
 env.close()

@@ -37,7 +37,7 @@
     <flow id="flow5" begin="0" type="typeDist0" route="route5" departSpeed="random" departLane="0" probability="0.025"/> 
 
     <!-- Ego car -->
-    <route id="routeEgo" edges=" 699146621#0 -6114188#4 -6114188#3"/>
+    <route id="routeEgo" edges=" 699146621#0 -6114188#4 -6114188#3 -6114188#2 -6114188#1"/>
     <!-- <vehicle id="Ego" type="vType0" route="routeEgo" depart="50" departSpeed="random" departLane="0" probability="0.1"/> -->
 
 </routes>
