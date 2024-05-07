@@ -35,9 +35,9 @@ make -f Makefile.cvs
 make
 sudo make install
 export PYTHONPATH=$PYTHONPATH:/<path to sumo>/sumo/tools
-
+python Python 3.10.11
 sudo apt install python-pip
-pip install numpy
+pip install numpy '1.23.5'
 sudo pip install matplotlib
 sudo pip install scipy
 sudo apt-get install python-tk
