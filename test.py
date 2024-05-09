@@ -8,6 +8,8 @@ from collections import namedtuple
 import gym_sumo.envs.sumo_env as sumo_env
 import matplotlib.pyplot as plt
 import logging
+import os
+import argparse
 
 logging.basicConfig(filename='test_log.txt', level=logging.INFO, format='%(message)s')
 
@@ -45,11 +47,13 @@ class DQNAgent:
             with torch.no_grad():
                 return self.policy_net(state).max(1)[1].view(1, 1)
     
+parser = argparse.ArgumentParser(description='Process some integers.')
+parser.add_argument('--model', type=str, required=True, help='The name of the model to load')
+args = parser.parse_args()
 
     
-
-model_path = 'C:\\Users\\Sande\\Desktop\\Safe-Intersection-Navigation-AVs-using-Reinforcement-Learning\\models\\1200_episode_model.pth'
-
+models_dir = "models"
+model_path = os.path.join(models_dir, args.model)
 
 env_name = 'sumo-v0' 
 env_args = {'mode': 'test'}
