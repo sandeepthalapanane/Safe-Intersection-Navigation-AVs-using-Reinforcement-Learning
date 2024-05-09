@@ -10,9 +10,17 @@ import os
 import gym_sumo.envs.sumo_env as sumo_env
 import logging
 import matplotlib.pyplot as plt
+import argparse
+import math
 
 # Configure logging
 logging.basicConfig(filename='training_log.txt', level=logging.INFO, format='%(message)s')
+parser = argparse.ArgumentParser(description='Give bool value')
+parser.add_argument("--continue_train", action="store_true", help="If you want to continue the training, please give this argument while running the script") 
+parser.add_argument('--no_of_episodes', type=int, required=False, help='Number of training episdoes', default=1200)
+args = parser.parse_args()
+
+
 
 Transition = namedtuple('Transition', ('state', 'action', 'next_state', 'reward', 'done'))
 
@@ -105,33 +113,43 @@ model_dir = "models/"
 
 
 agent = DQNAgent(input_dim, output_dim, lr=0.001, gamma=0.99, epsilon=0.1, target_update=5)
+scenario_update = 0
+num_episodes = args.no_of_episodes
+scenarios = 12
 
-
-if os.path.exists(model_dir):
-    saved_models = os.listdir(model_dir)
-    if saved_models:
-        saved_models.sort()
-        last_model = saved_models[-1]
-        last_episode = int(last_model.split("_")[0])
-        start_episode = last_episode + 1
-        model_path = os.path.join(model_dir, last_model)
-        agent.policy_net.load_state_dict(torch.load(model_path))
-        env.scenario_counter(int(last_episode/100))
-        print("Loaded model weights from", model_path)
-    else:
-        start_episode = 0
+if args.continue_train == True:
+    print('continuing')
+    if os.path.exists(model_dir):
+        saved_models = os.listdir(model_dir)
+        if saved_models:
+            saved_models.sort()
+            last_model = saved_models[-1]
+            last_episode = int(last_model.split("_")[0])
+            start_episode = last_episode + 1
+            model_path = os.path.join(model_dir, last_model)
+            agent.policy_net.load_state_dict(torch.load(model_path))
+            print('start_episode', num_episodes, start_episode)
+            scenario_update = int(math.floor((num_episodes - start_episode)/scenarios))
+            print('scenario_update', scenario_update)
+            if scenario_update*scenarios != num_episodes:
+                num_episodes = scenario_update*scenarios + start_episode
+            print("Loaded model weights from", model_path)
+        else:
+            print("There are no models in the directory, starting from 0th episode")
+            start_episode = 0
+            scenario_update = int(math.floor(num_episodes/scenarios))
 else:
     start_episode = 0
+    scenario_update = int(math.floor(num_episodes/scenarios))
 
-num_episodes = 1200
-scenarios = 12
-sceanrio_update = num_episodes - start_episode/scenarios
 
+
+print('Start Episode {}: End Episode = {}, Training episodes for each scenario: {}'.format(start_episode, num_episodes, scenario_update))
 re_wards = []
 
 for episode in range(start_episode, num_episodes, 1):
-    if (episode % 100 == 0) and (episode > 0):
-        env.scenario_counter(int(episode/100))
+    if (episode % scenario_update == 0) and (episode > 0):
+        env.scenario_counter(int((episode-start_episode)/scenario_update))
         formatted_episode = str(episode).zfill(4)
         model_path = model_dir + "{}_episode_model.pth".format(formatted_episode)
         torch.save(agent.policy_net.state_dict(), model_path)
@@ -158,8 +176,8 @@ for episode in range(start_episode, num_episodes, 1):
     logging.info('Episode {}: Total Reward = {}, Result: {}'.format(episode, round(total_reward,3), terminalType))
     
 
-
-torch.save(agent.policy_net.state_dict(), 'models/1200_episode_model.pth')
+model_path = model_dir + "{}_episode_model.pth".format(num_episodes)
+torch.save(agent.policy_net.state_dict(), model_path)
 
 
 file_path = 'training_log.txt'
@@ -180,6 +198,22 @@ for line in data:
             rewards.append(reward)
         except ValueError:
             print(f"Skipping line: {line}")
+
+k = 0
+survived_count = 0
+collided_count = 0
+for line in data:
+    if (k%100 == 0 and k >0):
+        logging.info('Scenario {}: survived_count = {}, collided_count: {}'.format((k/100), survived_count, collided_count))
+    if "Survived" in line:
+        survived_count += 1
+    elif "Collided" in line:
+        collided_count += 1
+    k += 1
+
+print("Survived count:", survived_count)
+print("Collided count:", collided_count)
+print("Training Accuracy:", survived_count/(survived_count + collided_count))
 
 # Plot the total rewards
 plt.plot(episodes, rewards, linestyle='-')

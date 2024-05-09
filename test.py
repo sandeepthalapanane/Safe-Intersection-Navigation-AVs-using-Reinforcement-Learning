@@ -48,7 +48,7 @@ class DQNAgent:
                 return self.policy_net(state).max(1)[1].view(1, 1)
     
 parser = argparse.ArgumentParser(description='Process some integers.')
-parser.add_argument('--model', type=str, required=True, help='The name of the model to load')
+parser.add_argument('--model', type=str, required=True, help='The name of the model to load', default="1200_episode_model.pth")
 args = parser.parse_args()
 
     
@@ -106,6 +106,22 @@ for line in data:
             rewards.append(reward)
         except ValueError:
             print(f"Skipping line: {line}")
+
+k = 0
+survived_count = 0
+collided_count = 0
+for line in data:
+    if (k%100 == 0 and k >0):
+        logging.info('Scenario {}: survived_count = {}, collided_count: {}'.format((k/100), survived_count, collided_count))
+    if "Survived" in line:
+        survived_count += 1
+    elif "Collided" in line:
+        collided_count += 1
+    k += 1
+
+print("Survived count:", survived_count)
+print("Collided count:", collided_count)
+print("Testing Accuracy:", survived_count/(survived_count + collided_count))
 
 # Plot the total rewards
 plt.plot(episodes, rewards, linestyle='-')

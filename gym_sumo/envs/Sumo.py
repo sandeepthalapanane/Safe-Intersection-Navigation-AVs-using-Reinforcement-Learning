@@ -9,11 +9,11 @@ def initSimulator(withGUI, portnum, name):
 
 	# Path to the sumo binary
 	if withGUI:
-		# sumoBinary = "C:/Sumo/bin/sumo-gui"
-		sumoBinary = "D:/CMSC473/SUMO/bin/sumo-gui.exe"
+		sumoBinary = "C:/Sumo/bin/sumo-gui"
+		# sumoBinary = "D:/CMSC473/SUMO/bin/sumo-gui.exe"
 	else:
-		# sumoBinary = "C:/Sumo/bin/sumo"
-		sumoBinary = "D:/CMSC473/SUMO/bin/sumo"
+		sumoBinary = "C:/Sumo/bin/sumo"
+		# sumoBinary = "D:/CMSC473/SUMO/bin/sumo"
 
 
 	# Load the scenario

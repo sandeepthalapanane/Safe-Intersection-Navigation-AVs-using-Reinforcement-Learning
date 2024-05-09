@@ -2,7 +2,7 @@
 
 1) SUMO
 
-    Install SUMO using this link: https://sumo.dlr.de/docs/Installing/index.html\
+    Install SUMO using this link: https://sumo.dlr.de/docs/Installing/index.html
 
     For easy installation of dependencies and running the reinforcement
     learning model, we recommend installing SUMO in a Windows environment using the conda environment.
@@ -15,12 +15,12 @@
 After Successful installation of both SUMO and Anaconda/Miniconda, download the folder and create a conda environment using the `enviornment.yaml` file in the folder using the command given below:
 
 ````
-cd <folder_location\\folder_name>
+cd <folder_location\\Sumo_AV_Gym>
 conda env create -f environment.yaml
 ````
 
 * Changes to be made in Sumo.py file
-    * cd gym_sumo\\\envs
+    * cd gym_sumo\\envs
     * locate and open Sumo.py
     * Change sumoBinary location inside the `initSimulator` function in both if and else statements (# comments will be provided in the code to make sure you locate the code line)
 
@@ -37,11 +37,19 @@ To train the autonomous vehicle using the provided environments, run the followi
 
 - Make sure to be inside the base folder which should be `Sumo_AV_Gym`
 
+If you want to see the sumo environment gui while training, change the `self.withGUI = False` to `self.withGUI = True` inside the `SUMOEnv class` -> `_init_ function` -> `mode="train"` in the `sumo_env.py` file
+
+If you want to start the training from the start without continuing from the previous model trained use the below command
+
 ````
 python train.py
 ````
 
-If you want to see the sumo environment gui while training, change the `self.withGUI = False` to `self.withGUI = True` inside the `SUMOEnv class` -> `_init_ function` -> `mode="train"` in the `sumo_env.py` file
+If you want to continue the training use the below command, the last model saved was around 1200 episdoes, so we need to increase the number of episodes to continue the training
+
+````
+python train.py --continue_train --no_of_episodes 1400
+````
 
 It is suggeested to run the training without the GUI to speed up the training process
 
